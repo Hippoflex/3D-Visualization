@@ -11,12 +11,13 @@ const FAR = 1000;
 // Shadows smoothing
 const LIGHT_SMOOTHING = 20000;
 
-const SOURCE = "https://a1pha1337.github.io/ComputerGraphics/"
+const SOURCE = "https://hippoflex.github.io/"
 
 function main() {
 	// Create scene
 	var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xAAAAAA);
+	const LoTR = new THREE.TextureLoader().load('./objects/172373.jpg')
+    scene.background = LoTR;
 	
 	// Create camera
 	var camera = new THREE.PerspectiveCamera(FOV, ASPECT, NEAR, FAR);
@@ -32,34 +33,58 @@ function main() {
 	const controls = new THREE.OrbitControls(camera, renderer.domElement);
 	controls.update();
 
-	// Load object with material
-	var mtlLoader = new THREE.MTLLoader();
-	mtlLoader.load(SOURCE + "objects/shop.mtl", (materials) => {
-		materials.preload();
+	//Materials
+	const sauron = new THREE.TextureLoader().load('./objects/sauron2.jpg')
+	const ring = new THREE.TextureLoader().load('./objects/OneRing2.png')
+	const mordor = new THREE.TextureLoader().load('./objects/mordor.png')
+	const gendalf = new THREE.TextureLoader().load('./objects/gendalf.jpg')
 
-		var objLoader = new THREE.OBJLoader();
-		objLoader.setMaterials(materials);
-		objLoader.load(SOURCE + "objects/shop.obj", (shop) => {
-			shop.position.set(0, 0, 0);
-
-			// Shadows properties
-			shop.traverse((child)=>{
-				child.castShadow = true;
-				child.receiveShadow = true;
-			})
-			scene.add(shop);
-		});
+	//TestBox
+	const ge0 = new THREE.BoxGeometry(15, 15, 15);
+	const me0 = new THREE.MeshStandardMaterial({
+		map: gendalf,
 	})
-	// var geometry = new THREE.BoxGeometry(2, 2, 2);
-	// var material = new THREE.MeshPhongMaterial({
-	// 	color: 0xffffff,
-	// 	side: THREE.DoubleSide
-	// });
 
-	// var cube = new THREE.Mesh(geometry, material);
-	// cube.receiveShadow = true;
-	// cube.position.set(-10, 15, -10);
-	// scene.add(cube);
+	const boxMe0 = new THREE.Mesh(ge0, me0);
+	boxMe0.position.x = 29;
+	boxMe0.position.y = -5;
+	scene.add(boxMe0);
+
+
+	//Sphere
+	const ge1 = new THREE.SphereGeometry(15, 32, 16);
+	const me1 = new THREE.MeshStandardMaterial({
+		map: sauron,
+	})
+
+	const sphereMe1 = new THREE.Mesh(ge1, me1);
+	sphereMe1.position.x = -9;
+	sphereMe1.position.y = 5
+	scene.add(sphereMe1);
+
+	//Ring Torus
+	const geometry = new THREE.TorusGeometry( 6.46, 1, 30, 200 );
+	const material = new THREE.MeshStandardMaterial({		
+		color: 0xFFD700,
+		
+	})
+	const torus = new THREE.Mesh( geometry, material );
+	torus.position.x = 30;
+	torus.position.y = 10;
+	scene.add( torus );
+
+	//Cone
+	const geometryCone = new THREE.ConeGeometry( 27, 50, 26, 15, 2.26, 6.28 );
+	const materialCone = new THREE.MeshStandardMaterial({
+		map: mordor,
+	})
+	const cone = new THREE.Mesh( geometryCone, materialCone );
+	cone.position.x = -9
+	cone.position.y = -15
+	scene.add( cone );
+
+
+
 
 	// The first outside light
 	var pointLightIntensity = 1;
@@ -89,7 +114,7 @@ function main() {
 	scene.add(pointLight);
 
 	// Ambient light
-	var ambLightIntensity = 0.25;
+	var ambLightIntensity = 0.4;
 	var ambLight = new THREE.AmbientLight( 0xffffff, ambLightIntensity);
 	scene.add(ambLight);
 
