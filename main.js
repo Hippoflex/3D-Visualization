@@ -11,12 +11,20 @@ const FAR = 1000;
 // Shadows smoothing
 const LIGHT_SMOOTHING = 20000;
 
-const SOURCE = "https://a1pha1337.github.io/ComputerGraphics/"
+const SOURCE = "https://hippoflex.github.io/"
 
 function main() {
 	// Create scene
 	var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xAAAAAA);
+
+	const backgroundMap = new THREE.TextureLoader().load('./objects/172373.jpg')
+    scene.background = backgroundMap;
+
+	//Materials
+	const sauron = new THREE.TextureLoader().load('./objects/sauron.jpg')
+	const gendalf = new THREE.TextureLoader().load('./objects/gendalf.jpg')
+	const mordor = new THREE.TextureLoader().load('./objects/mordor.png')
+	const ring = new THREE.TextureLoader().load('./objects/ring.png')
 	
 	// Create camera
 	var camera = new THREE.PerspectiveCamera(FOV, ASPECT, NEAR, FAR);
@@ -32,34 +40,37 @@ function main() {
 	const controls = new THREE.OrbitControls(camera, renderer.domElement);
 	controls.update();
 
-	// Load object with material
-	var mtlLoader = new THREE.MTLLoader();
-	mtlLoader.load(SOURCE + "objects/shop.mtl", (materials) => {
-		materials.preload();
+	//Sphere
+	const geometrySphere = new THREE.SphereGeometry( 15, 64, 32 );
+	const materialSphere = new THREE.MeshStandardMaterial( { map: sauron } );
+	const sphere = new THREE.Mesh( geometrySphere, materialSphere );
+	sphere.position.x = -10;
+	sphere.position.y = 30;
+	scene.add( sphere );
 
-		var objLoader = new THREE.OBJLoader();
-		objLoader.setMaterials(materials);
-		objLoader.load(SOURCE + "objects/shop.obj", (shop) => {
-			shop.position.set(0, 0, 0);
+	//Torus
+	const geometryTorus = new THREE.TorusGeometry( 6, 1, 30, 200 );
+	const materialTorus = new THREE.MeshStandardMaterial( { map: ring } );
+	const torus = new THREE.Mesh( geometryTorus, materialTorus );
+	torus.position.x = 25;
+	torus.position.y = 30;
+	scene.add( torus );
 
-			// Shadows properties
-			shop.traverse((child)=>{
-				child.castShadow = true;
-				child.receiveShadow = true;
-			})
-			scene.add(shop);
-		});
-	})
-	// var geometry = new THREE.BoxGeometry(2, 2, 2);
-	// var material = new THREE.MeshPhongMaterial({
-	// 	color: 0xffffff,
-	// 	side: THREE.DoubleSide
-	// });
+	//Cone
+	const geometryCone = new THREE.ConeGeometry( 20, 50, 64, 64, 6.28, 6.28 );
+	const materialCone = new THREE.MeshStandardMaterial( { map: mordor } );
+	const cone = new THREE.Mesh( geometryCone, materialCone );
+	cone.position.x = -10;
+	cone.position.y = 10;
+	scene.add( cone );
 
-	// var cube = new THREE.Mesh(geometry, material);
-	// cube.receiveShadow = true;
-	// cube.position.set(-10, 15, -10);
-	// scene.add(cube);
+	//Box
+	const geometryBox = new THREE.BoxGeometry( 15, 15, 15 );
+	const materialBox = new THREE.MeshStandardMaterial( { map: gendalf } );
+	const cube = new THREE.Mesh( geometryBox, materialBox );
+	cube.position.x = 25;
+	cube.position.y = 15;
+	scene.add( cube );
 
 	// The first outside light
 	var pointLightIntensity = 1;
@@ -89,7 +100,7 @@ function main() {
 	scene.add(pointLight);
 
 	// Ambient light
-	var ambLightIntensity = 0.25;
+	var ambLightIntensity = 0.5;
 	var ambLight = new THREE.AmbientLight( 0xffffff, ambLightIntensity);
 	scene.add(ambLight);
 
